@@ -5,7 +5,7 @@ import { IEvents } from "./base/events";
 import { Form } from "./common/Form";
 
 interface ISuccess {
-    description: number;
+    description: string | number;
 }
 
 interface ISuccessActions {
@@ -46,6 +46,10 @@ export class Order extends Form<IOrder> {
         this._payment.forEach(button => {
             button.classList.remove('button_alt-active');
         })
+    }
+
+    getActiveButton() {
+        return this.container.querySelector('.button_alt-active').textContent ?? '';
     }
     
 

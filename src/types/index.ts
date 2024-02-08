@@ -30,17 +30,17 @@ export interface IAppState {
 }
 
 export interface IOrderForm {
-    address: string;
+    payment: string;
     email: string;
     phone: string;
-    payment?: string;
+    address: string;
+    total: number;
+    items: string[];
 }
 
 export interface IOrder extends IOrderForm {
-    payment: string,
-    address: string,
-    items?: string[],
-    total?: number
+    items: string[],
+
 }
 
 export type FormErrors = Partial<Record<keyof IOrder, string>>;

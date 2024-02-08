@@ -175,6 +175,7 @@ events.on('order:open', () => {
 });
 
 events.on('contacts:open', () => {
+    appData.setOrderField('payment', order.getActiveButton());
     modal.render({
         content: contacts.render({
             email: '',
@@ -186,11 +187,22 @@ events.on('contacts:open', () => {
 });
 
 events.on('success:open', () => {
-    modal.render({
-        content: success.render({
-            description: appData.getTotal()
-        })
+    appData.order.total = appData.getTotal();
+    appData.basket.forEach(order => {
+        appData.setOrderField('items', order.id);
     });
+    api.orderProducts(appData.order)
+        .then(res => {
+            modal.render({
+                content: success.render({
+                    description: appData.order.total
+                })
+            });
+        })
+        .catch(err => {
+            console.log('Error: ' + err);
+        })
+    
 })
 
 

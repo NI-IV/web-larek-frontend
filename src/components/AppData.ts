@@ -79,8 +79,15 @@ export class AppState extends Model<IAppState> {
         this.emitChanges('basket:changed');
     }
 
-    setOrderField(field: keyof IOrderForm, value: string) {
-        this.order[field] = value;
+    setOrderField(field: keyof IOrderForm, value: string | number) {
+        if (field === 'total') {
+            this.order[field] = value as number;
+        } else if (field === 'items') {
+            const arr = this.order[field];
+            arr.push(value as string);
+        } else {
+            this.order[field] = value as string;
+        }
 
         if (this.validateOrder()) {
             this.events.emit('order:ready', this.order);

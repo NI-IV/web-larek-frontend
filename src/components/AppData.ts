@@ -40,8 +40,8 @@ export class AppState extends Model<IAppState> {
     catalog: ProductItem[];
     loading: boolean;
     order: IOrder = {
-        email: '',
-        phone: '',
+        email: '-',
+        phone: '-',
         items: [],
         payment: '',
         address: '',
@@ -94,6 +94,9 @@ export class AppState extends Model<IAppState> {
         }
         if (!this.order.phone) {
             errors.phone = 'Необходимо указать телефон';
+        }
+        if (!this.order.address) {
+            errors.address = 'Неоходимо указать адрес';
         }
         this.formErrors = errors;
         this.events.emit('formErrors:change', this.formErrors);

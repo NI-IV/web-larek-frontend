@@ -9,6 +9,8 @@ import { Modal } from "./components/common/Modal";
 import { Basket } from "./components/common/Basket";
 import { AppState, ProductItem, CatalogChangeEvent } from "./components/AppData";
 import { CatalogItem, BasketCard } from './components/Card';
+import { Contacts, Order, Success } from "./components/Order";
+import { IOrderForm } from './types';
 
 const events = new EventEmitter();
 const api = new WebAPI(CDN_URL, API_URL);
@@ -30,7 +32,15 @@ const modal = new Modal(ensureElement<HTMLTemplateElement>('#modal-container'), 
 
 // Переиспользуемые части интерфейса
 const basket = new Basket (cloneTemplate(basketTemplate), events);
-
+const order = new Order (cloneTemplate(orderTemplate), events);
+const contacts = new Contacts (cloneTemplate(contactsTemplate), events);
+const success = new Success(cloneTemplate(successTemplate), {
+    onClick: () => {
+        modal.close();
+        appData.clearBasket();
+        events.emit('basket:changed');
+    }
+});
 // Изменились элементы каталога
 events.on<CatalogChangeEvent>('items:changed', () => {
     page.catalog = appData.catalog.map(item => {
@@ -94,7 +104,7 @@ events.on('preview:changed', (item: ProductItem) => {
 });
 
 
-
+// Открытие корзины
 events.on('basket:open', () => {
     modal.render({
         content: createElement('div', {}, [
@@ -103,13 +113,88 @@ events.on('basket:open', () => {
     })
 })
 
+// Добавление карточки в корзину
 events.on('basket:add', (item: ProductItem) => {
     appData.setBasket(item);
 })
 
+// Удаление карточки из корзины
 events.on('basket:remove', (item: ProductItem) => {
     appData.removeBasket(item);
 })
+
+// Изменение корзины
+events.on('basket:changed', () => {
+    let index = 0;
+    page.counter = appData.basket.length;
+    basket.items = appData.basket.map(item => {
+        const basketItem = new BasketCard(cloneTemplate(cardBasketTemplate), {
+            onClick: () => {
+                events.emit('basket:remove', item)
+            }
+        });
+        return basketItem.render({
+            title: item.title,
+            price: item.price,
+            index: ++index
+        })
+    })
+    basket.selected = appData.basket;
+    basket.total = appData.getTotal();
+    
+})
+
+// Изменилось состояние валидации формы
+events.on('formErrors:change', (errors: Partial<IOrderForm>) => {
+    const { address, email, phone } = errors;
+    order.valid = !address;
+    contacts.valid = !email && !phone;
+    order.errors = Object.values({address}).filter(i => !!i).join('; ');
+    contacts.errors = Object.values({email, phone}).filter(i => !!i).join('; ');
+});
+
+// Изменилось одно из полей
+events.on(/^order\..*:change/, (data: { field: keyof IOrderForm, value: string }) => {
+    appData.setOrderField(data.field, data.value);
+});
+
+events.on(/^contacts\..*:change/, (data: { field: keyof IOrderForm, value: string }) => {
+    appData.setOrderField(data.field, data.value);
+});
+
+// Открыть форму заказа
+events.on('order:open', () => {
+    order.unActiveButton();
+    modal.render({
+        content: order.render({
+            address: '',
+            valid: false,
+            errors: []
+        })
+    });
+});
+
+events.on('contacts:open', () => {
+    modal.render({
+        content: contacts.render({
+            email: '',
+            phone: '',
+            valid: false,
+            errors: []
+        })
+    });
+});
+
+events.on('success:open', () => {
+    modal.render({
+        content: success.render({
+            description: appData.getTotal()
+        })
+    });
+})
+
+
+
 
 // Блокируем прокрутку страницы если открыта модалка
 events.on('modal:open', () => {

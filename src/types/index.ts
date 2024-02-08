@@ -1,5 +1,9 @@
 export type LotStatus = 'wait' | 'active' | 'closed';
 
+export interface IActions {
+    onClick: () => void;
+}
+
 export interface IAuction {
     status: LotStatus;
     datetime: string;
@@ -26,15 +30,17 @@ export interface IAppState {
 }
 
 export interface IOrderForm {
+    address: string;
     email: string;
     phone: string;
+    payment?: string;
 }
 
 export interface IOrder extends IOrderForm {
-    items: string[],
     payment: string,
     address: string,
-    total: number
+    items?: string[],
+    total?: number
 }
 
 export type FormErrors = Partial<Record<keyof IOrder, string>>;

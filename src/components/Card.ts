@@ -15,7 +15,7 @@ export interface ICard<T> {
     title: string,
     category: string,
     price: number,
-    itemIndex: number;
+    index: number;
     button: IProductItem[];
 }
 
@@ -114,19 +114,19 @@ export class CatalogItem extends Card<ICatalogItem> {
 
 
 export interface IBasketCard {
-    itemIndex: number;
+    index: number;
 }
 
 export class BasketCard extends Card<IBasketCard> {
-    protected _itemIndex: HTMLElement;
+    protected _index: HTMLElement;
 
     constructor(container: HTMLElement, actions?: ICardActions) {
         super('card', container, actions);
-        this._itemIndex = ensureElement<HTMLElement>(`.basket__item-index`, container);
+        this._index = ensureElement<HTMLElement>(`.basket__item-index`, container);
         this._button = ensureElement<HTMLButtonElement>(`.basket__item-delete`, container);
     }
 
-    set itemIndex(value: number) {
-        this.setText(this._itemIndex, value)
+    set index(value: number) {
+        this.setText(this._index, value)
     }
 }

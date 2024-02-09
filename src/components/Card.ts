@@ -1,23 +1,8 @@
 // ▷▷▷ IMPORT
 import { ProductItem } from "./AppData"
-import { IProductItem } from "../types";
+import { IBasketCard, ICard, ICardActions, ICatalogItem, IProductItem } from "../types";
 import { Component } from "./base/Component";
 import { ensureElement } from "../utils/utils";
-
-interface ICardActions {
-    onClick: (event: MouseEvent) => void;
-}
-
-export interface ICard<T> {
-    id: string,
-    description: string,
-    image: string,
-    title: string,
-    category: string,
-    price: number,
-    index: number;
-    button: IProductItem[];
-}
 
 export class Card<T> extends Component<ICard<T>> {
     protected _title: HTMLElement;
@@ -56,13 +41,6 @@ export class Card<T> extends Component<ICard<T>> {
           this.setText(this._price, `Бесценно`)
         }
     }
-}
-
-
-export interface ICatalogItem {
-    category: string;
-    image: string;
-    description: string | string[];
 }
 
 export class CatalogItem extends Card<ICatalogItem> {
@@ -109,13 +87,8 @@ export class CatalogItem extends Card<ICatalogItem> {
     set button(basket: ProductItem[]) {
         if (basket.filter(product => product.id === this.container.dataset.id).length > 0) {
             this.setText(this._button, 'Удалить из корзины');
-        }else this.setText(this._button, 'Купить')
+        } else this.setText(this._button, 'Купить')
     }
-}
-
-
-export interface IBasketCard {
-    index: number;
 }
 
 export class BasketCard extends Card<IBasketCard> {

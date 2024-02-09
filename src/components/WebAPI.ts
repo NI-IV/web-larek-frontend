@@ -1,10 +1,7 @@
 import { Api, ApiListResponse } from './base/api';
-import { IOrder, IOrderResult, IProductItem } from "../types";
+import { IOrder, IOrderResult, IProductItem, IWebAPI } from "../types";
 
-export interface IWebAPI {
-    getProductsList: () => Promise<IProductItem[]>;
-    getProductItem: (id: string) => Promise<IProductItem>;
-}
+
 
 export class WebAPI extends Api implements IWebAPI {
     readonly cdn: string;

@@ -1,19 +1,12 @@
-import { IActions, IOrder, IOrderForm } from "../types";
+import { IActions, IOrder, IOrderForm, ISuccess, ISuccessActions } from "../types";
 import { ensureAllElements, ensureElement } from "../utils/utils";
 import { Component } from "./base/Component";
 import { IEvents } from "./base/events";
 import { Form } from "./common/Form";
 
-interface ISuccess {
-    description: string | number;
-}
-
-interface ISuccessActions {
-    onClick: () => void;
-}
-
 export class Order extends Form<IOrder> {
     protected _payment: HTMLButtonElement[];
+    protected _address: HTMLInputElement;
     protected _button: HTMLElement;
 
     constructor(container: HTMLFormElement, events: IEvents, actions?: IActions) {
@@ -34,8 +27,6 @@ export class Order extends Form<IOrder> {
                 events.emit('contacts:open');
             });
         }
-
-    
     }
 
     set address(value: string) {
@@ -93,7 +84,6 @@ export class Success extends Component<ISuccess> {
             this._close.addEventListener('click', actions.onClick);
         }
     }
-
 
     set description(value: string) {
         this.setText(this._description, `Списано ${value} синапсов`);
